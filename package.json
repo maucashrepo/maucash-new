@@ -1,8 +1,8 @@
 {
-  "name": "maucash",
-  "description": "maucash中常用组件抽取",
+  "name": "@maucash-repo/maucash",
+  "description": "maucash-new",
   "version": "1.5.4",
-  "author": "kuangshp <kuangshp@126.com>",
+  "author": "maucash",
   "license": "MIT",
   "private": false,
   "main": "dist/maucash.js",

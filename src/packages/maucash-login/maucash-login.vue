@@ -9,6 +9,9 @@
             <FormItem prop="mobile">
               <Input :maxlength="20" type="text" v-model="userForm.mobile" icon="ios-person" placeholder="Please enter mobile" autofocus></Input>
             </FormItem>
+            <FormItem prop="mobile">
+              <Input :maxlength="20" type="text" v-model="userForm.mobile" icon="ios-person" placeholder="Please enter mobile" autofocus></Input>
+            </FormItem>
             <FormItem prop="password">
               <Input :maxlength="20" type="password" v-model="userForm.password" icon="ios-locked-outline" placeholder="Please enter password" @on-enter="enterLogin('userForm')"></Input>
             </FormItem>
