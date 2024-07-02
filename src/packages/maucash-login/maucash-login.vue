@@ -6,15 +6,12 @@
         <div class="login-box" :class="{'no-pointer-events': submitting}">
           <div class="app-name" :style="`background-image:url('${this.imgUrl}/resource/welab-web/login_log.png')`"></div>
           <Form ref="userForm" :model="userForm" :rules="userRule" v-show="!secondFactor">
-            <FormItem prop="mobile">
-              <Input :maxlength="20" type="text" v-model="userForm.mobile" icon="ios-person" placeholder="Please enter mobile" autofocus></Input>
-            </FormItem>
-            <FormItem prop="mobile">
+            <!-- <FormItem prop="mobile">
               <Input :maxlength="20" type="text" v-model="userForm.mobile" icon="ios-person" placeholder="Please enter mobile" autofocus></Input>
             </FormItem>
             <FormItem prop="password">
               <Input :maxlength="20" type="password" v-model="userForm.password" icon="ios-locked-outline" placeholder="Please enter password" @on-enter="enterLogin('userForm')"></Input>
-            </FormItem>
+            </FormItem> -->
             <FormItem prop="code" v-if="isSms">
               <Input :maxlength="4" type="text" v-model="userForm.code" placeholder="Please enter code">
                 <span slot="append" class="get-code" @click="getCode" v-if="!is_get_code">get sms code</span>
