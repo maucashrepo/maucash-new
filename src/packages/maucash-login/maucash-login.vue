@@ -1,35 +1,31 @@
 <template>
   <div class="login-page">
     <div v-if="!isReview" id="menu">
-      <!-- 背景画布 -->
       <div id="canvas" class="canvas" :style="`background-image:url('${this.imgUrl}/resource/welab-web/login_bg.png')`"></div>
-      <!-- 登陆弹框start -->
       <div class="login">
         <div class="login-box" :class="{'no-pointer-events': submitting}">
           <div class="app-name" :style="`background-image:url('${this.imgUrl}/resource/welab-web/login_log.png')`"></div>
           <Form ref="userForm" :model="userForm" :rules="userRule" v-show="!secondFactor">
-            <!-- <FormItem prop="mobile">
+            <FormItem prop="mobile">
               <Input :maxlength="20" type="text" v-model="userForm.mobile" icon="ios-person" placeholder="Please enter mobile" autofocus></Input>
             </FormItem>
             <FormItem prop="password">
               <Input :maxlength="20" type="password" v-model="userForm.password" icon="ios-locked-outline" placeholder="Please enter password" @on-enter="enterLogin('userForm')"></Input>
-            </FormItem> -->
+            </FormItem>
             <FormItem prop="code" v-if="isSms">
               <Input :maxlength="4" type="text" v-model="userForm.code" placeholder="Please enter code">
-              <span slot="append" class="get-code" @click="getCode" v-if="!is_get_code">get sms code</span>
-              <span slot="append" class="get-code" v-if="is_get_code">{{time_txt}}</span>
+                <span slot="append" class="get-code" @click="getCode" v-if="!is_get_code">get sms code</span>
+                <span slot="append" class="get-code" v-if="is_get_code">{{time_txt}}</span>
               </Input>
             </FormItem>
             <Button type="primary" :loading="submitting" @click="handleLogin('userForm')" long style="background:#FA5C2D; border: 1px solid #FA5C2D">
               <span v-if="!submitting">Login</span>
               <span v-else>Loading...</span>
             </Button>
-            <!-- <p class="reset-password" v-if="isForgetPassword"><router-link to="/reset_password">Forgot Password?</router-link></p> -->
           </Form>
         </div>
         <Alert v-show="error" type="error" class="error">{{error}}</Alert>
       </div>
-      <!-- 登陆弹框end -->
       <p class="login-info" v-if="isLogInfo">This technology is the proprietary property of WeLab and its affiliates. Any system grant does not provide ownership or the right to own the system or any specific module.</p>
     </div>
     <div v-else>
@@ -38,18 +34,17 @@
     <change-password ref="changePassword" :baseUrl="baseUrl" :headers="headers" @changePassword="changePwd"/>
   </div>
 </template>
-
 <script>
-import { mobileReg, passwordReg } from "./../patterns";
-import axios from "axios";
-import { autoCloseModal } from "./../mixins";
-import MaucashReview from "./maucash-review";
+import { mobileReg, passwordReg } from './patterns';
+import axios from 'axios';
+import { autoCloseModal } from './mixins';
+import MaucashReview from './maucash-review';
 import changePassword from './change-password';
 import Particle from 'zhihu-particle';
-    
+
 export default {
   mixins: [autoCloseModal],
-  name: "maucashLogin",
+  name: 'maucashLogin',
   components: {
     MaucashReview,
     changePassword
@@ -57,11 +52,11 @@ export default {
   props: {
     baseUrl: {
       type: String,
-      default: ""
+      default: ''
     },
     imgUrl:{
       type: String,
-      default: ""
+      default: ''
     },
     headers: {
       type: Object,
@@ -80,58 +75,60 @@ export default {
   },
   data() {
     const validateUserName = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error("please enter the username"));
+      if (value === '') {
+        callback(new Error('please enter the username'));
       } else if (!mobileReg.test(value)) {
-        callback(new Error("username format error "));
+        callback(new Error('username format error '));
       } else {
         callback();
       }
     };
     const validatePassword = (rule, value, callback) => {
-      if (value === "") {
-        callback(new Error("please enter the password"));
+      if (value === '') {
+        callback(new Error('please enter the password'));
       } else {
         callback();
       }
     };
     const validateCode = (rule, value, callback) => {
       if (!window.localStorage.getItem('max_time_out')) {
-        callback(new Error("please get sms code"));
-      } else if (value === "") {
-        callback(new Error("please enter the code"));
+        callback(new Error('please get sms code'));
+      } else if (value === '') {
+        callback(new Error('please enter the code'));
       } else {
         callback();
       }
     };
     return {
-      loginUrl: "/welab-user/api/v1/user-login", //登录
-      smsUrl: "/welab-user/api/v1/send-sms-code/by-user", //获取验证码
+      loginUrl: '/welab-user/api/v1/user-login',
+      smsUrl: '/welab-user/api/v1/send-sms-code/by-user',
+      getLatestConfigUrl:'/welab-message/api/v1/otpConfigLog',
       isReview: false,
-      accessToken: "",
+      accessToken: '',
       submitting: false,
       secondFactor: false,
-      error: "",
+      error: '',
       is_get_code: false,
-      time_txt: "60s",
-      smsCodeId: "", // 短信验证码的id
+      time_txt: '',
+      resendTime: 0,
+      smsCodeId: '',
       userForm: {
-        mobile: "",
-        password: "",
-        code: ""
+        mobile: '',
+        password: '',
+        code: ''
       },
       userRule: {
         mobile: [
-          { required: true, trigger: "blur", message: "" },
-          { required: true, validator: validateUserName, trigger: "blur" }
+          { required: true, trigger: 'blur', message: '' },
+          { required: true, validator: validateUserName, trigger: 'blur' }
         ],
         password: [
-          { required: true, trigger: "blur", message: "" },
-          { required: true, validator: validatePassword, trigger: "blur" }
+          { required: true, trigger: 'blur', message: '' },
+          { required: true, validator: validatePassword, trigger: 'blur' }
         ],
         code: [
-          { required: true, trigger: "blur", message: "" },
-          { required: true, validator: validateCode, trigger: "blur" }
+          { required: true, trigger: 'blur', message: '' },
+          { required: true, validator: validateCode, trigger: 'blur' }
         ]
       }
     };
@@ -143,25 +140,47 @@ export default {
     setSubmitState(state) {
       this.submitting = state;
     },
-    // 获取验证码
-    getCode() {
+    async getLatestConfig() {
+      try {
+        const response = await axios.get(`${this.baseUrl}${this.getLatestConfigUrl}`, {
+          headers: this.headers,
+          params: {
+            otpSectionId: 2
+          }
+        });
+        const { code, result, message } = response; 
+        if (code === 0) {
+          return result;
+        } else {
+          this.warningAlert(message);
+        }
+      } catch (error) {
+        this.warningAlert(error);
+      }
+    },
+    async getCode() {
       let mobile = this.userForm.mobile;
       if (mobile && mobileReg.test(mobile)) {
+        let config = await this.getLatestConfig();
+        if (config) {
+          this.resendTime = config.resendTimeDurationAfter;
+          this.time_txt = `${this.resendTime}s`;
+        }
+
         axios
           .post(`${this.baseUrl}${this.smsUrl}`, {mobile}, {
-            headers: this.headers
+            headers: this.headers,
+            params: {
+              otpSectionId: 2
+            }
           })
           .then(data => {
-            const {
-              data: { code, result, message }
-            } = data;
+            const { code, result, message } = data
             if (code == 0) {
-              // this.smsCodeId = result;
-              // 修改状态
               this.is_get_code = true;
               window.localStorage.setItem('smsCodeId', result);
               window.localStorage.setItem('max_time_out', '5minutes');
-              let maxTime = 60;
+              let maxTime = this.resendTime;
               let getCodeState = setInterval(() => {
                 this.time_txt = `${maxTime}s`;
                 maxTime--;
@@ -170,13 +189,12 @@ export default {
                   this.is_get_code = false;
                 }
               }, 1000);
-              // 设置5分钟后就删除max_time_out
               setTimeout(() => {
                 window.localStorage.removeItem('max_time_out');
                 window.localStorage.removeItem('smsCodeId');
               }, 5 * 60 * 1000);
               this.successAlert(
-                "SMS verification code has been sent to your phone"
+                'SMS verification code has been sent to your phone'
               );
             } else {
               this.warningAlert(message);
@@ -190,7 +208,6 @@ export default {
         this.warningAlert('Please check your mobile phone number');
       }
     },
-    // 登陆请求
     handleLogin(name) {
       this.$refs[name].validate(valid => {
         if (!valid) return;
@@ -223,7 +240,7 @@ export default {
           })
           .then(res => {
             this.setSubmitState(false);
-            const { code, message, result } = res.data;
+            const { code, message, result } = res;
             if (code == 0) {
               const {
                 mobile,
@@ -233,15 +250,14 @@ export default {
                 temporaryLogin,
                 accessToken
               } = result;
-              // 登录成功，当前验证码无效
-              window.localStorage.removeItem("max_time_out");
-              window.localStorage.removeItem("smsCodeId");
+              window.localStorage.removeItem('max_time_out');
+              window.localStorage.removeItem('smsCodeId');
               if (!temporaryLogin) {
                 const {token,passwordExpired} = result;
                 if (passwordExpired) {
                   this.$refs.changePassword.openModal(token);
                 } else {
-                  this.$emit("loginHandle", result);
+                  this.$emit('loginHandle', result);
                 }
               } else {
                 this.accessToken = accessToken;
@@ -258,17 +274,16 @@ export default {
           });
       });
     },
-    // 回车触发登陆
     enterLogin(name) {
       this.handleLogin(name);
     },
     changePwd(result) {
       console.log('事件已经发送', result);
-      this.$emit("loginHandle", result);
+      this.$emit('loginHandle', result);
     },
     loginHandle(result) {
-      this.$emit("loginHandle", result);
-    }
+      this.$emit('loginHandle', result);
+    },
   },
   mounted() {
     new Particle(document.getElementById('canvas'), {
@@ -276,15 +291,13 @@ export default {
       density: 'low',
       atomColor: 'rgba(255,255,255,0.15)'
     });
-    // 禁止浏览器后退
     history.pushState(null, null, document.URL);
-    window.addEventListener("popstate", () => {
+    window.addEventListener('popstate', () => {
       history.pushState(null, null, document.URL);
     });
   }
 };
 </script>
-
 <style>
 html, body, #app {
   height: 100%;
@@ -322,8 +335,8 @@ html, body, #app {
 }
 .login-box {
   background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0px 5px 5px 1px rgb(0 0 0 / 10%);
+  /* border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 5px 5px 1px rgb(0 0 0 / 10%); */
   border-radius: 5px;
   padding: 2rem;
 }
